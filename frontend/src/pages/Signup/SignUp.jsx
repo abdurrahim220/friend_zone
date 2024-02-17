@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import GenderCheckBox from "../../components/GenderCheckBox/GenderCheckBox";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import Swal from "sweetalert2";
+
+import { useAuthContext } from "../../context/AuthProvider";
+
 const SignUp = () => {
   const {
     register,
@@ -12,7 +15,13 @@ const SignUp = () => {
     formState: { errors },
   } = useForm();
 
+  const { setUser } = useAuthContext();
+
+  const [loading, setLoading] = useState(false);
+
   const allGender = ["male", "female"];
+
+  const navigate = useNavigate();
 
   const onSubmit = async (data) => {
     const selectedGender =
@@ -23,6 +32,7 @@ const SignUp = () => {
       gender: selectedGender,
     };
     try {
+      setLoading(true);
       const response = await axios.post(
         "http://localhost:5000/api/auth/signup",
         formData
@@ -33,7 +43,11 @@ const SignUp = () => {
         text: "Registration successful!",
       });
       // console.log(response.data);
+      // localStorage.setItem("chat-user",JSON.stringify(response))
+      setUser(response.data);
+      navigate("/");
     } catch (error) {
+      setLoading(false);
       Swal.fire({
         icon: "error",
         title: "Error",
@@ -128,8 +142,16 @@ const SignUp = () => {
             {"Already"} have an account?
           </Link>
           <div>
-            <button type="submit" className="btn btn-block btn-sm mt-2">
-              Sign Up
+            <button
+              disabled={loading}
+              type="submit"
+              className="btn btn-block btn-sm mt-2"
+            >
+              {loading ? (
+                <span className="loading loading-spinner"></span>
+              ) : (
+                "Sign Up"
+              )}
             </button>
           </div>
         </form>
