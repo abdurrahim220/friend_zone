@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useAuthContext } from "../context/AuthProvider";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { api } from "../utils/api";
 
 const useLogout = () => {
   const { setUser } = useAuthContext();
@@ -9,9 +10,7 @@ const useLogout = () => {
   const logout = async () => {
     try {
       setLoading(true);
-      const response = await axios.post(
-        "http://localhost:5000/api/auth/logout"
-      );
+      const response = await axios.post(api + "/auth/logout");
 
       // console.log(response);
       setUser(null);

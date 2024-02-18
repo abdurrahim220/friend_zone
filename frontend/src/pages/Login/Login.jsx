@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthProvider";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { api } from "../../utils/api";
 
 const Login = () => {
   const {
@@ -23,7 +24,7 @@ const Login = () => {
     try {
       setLoading(true);
       const response = await axios.post(
-        "http://localhost:5000/api/auth/login",
+        api+"/auth/login",
         data
       );
       Swal.fire({

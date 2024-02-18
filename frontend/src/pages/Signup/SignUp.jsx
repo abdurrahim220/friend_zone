@@ -6,6 +6,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 
 import { useAuthContext } from "../../context/AuthProvider";
+import { api } from "../../utils/api";
 
 const SignUp = () => {
   const {
@@ -34,7 +35,7 @@ const SignUp = () => {
     try {
       setLoading(true);
       const response = await axios.post(
-        "http://localhost:5000/api/auth/signup",
+        api+"/auth/signup",
         formData
       );
       Swal.fire({

@@ -4,11 +4,11 @@ import Message from "../models/messageModel.js";
 export const sendMessage = async (req, res) => {
   try {
     const { message } = req.body;
-    // console.log("Message: ",message)
-    const { id: receiverId } = req.params;
-    const senderId = req.user_id;
 
-    console.log(receiverId, senderId);
+    const { id: receiverId } = req.params;
+    const senderId = req.user._id.toString();
+
+    console.log(receiverId, "senderId", senderId);
 
     let conversation = await Conversation.findOne({
       participants: { $all: [senderId, receiverId] },
@@ -16,7 +16,7 @@ export const sendMessage = async (req, res) => {
 
     if (!conversation) {
       conversation = await Conversation.create({
-        participants: { $all: [senderId, receiverId] },
+        participants:  [senderId, receiverId] ,
       });
     }
 
@@ -27,7 +27,7 @@ export const sendMessage = async (req, res) => {
     });
 
     if (newMessage) {
-      conversation.message.push(newMessage._id);
+      conversation.messages.push(newMessage._id);
     }
 
     await Promise.all([conversation.save(), newMessage.save()]);
@@ -36,7 +36,8 @@ export const sendMessage = async (req, res) => {
 
     res.status(201).json(newMessage);
   } catch (error) {
-    res.status(500).json({ error: "Internal server error!!" });
+    
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -46,12 +47,11 @@ export const getMessage = async (req, res) => {
     const senderId = req.user_id;
     const conversation = await Conversation.findOne({
       participants: { $all: [senderId, userToChatId] },
-    }).populate("message");
+    }).populate("messages");
 
     if (!conversation) return res.status(200).json([]);
-
-    res.status(200).json(conversation.message);
-    
+    const messages = conversation.messages;
+    res.status(200).json(messages);
   } catch (error) {
     res.status(500).json({ error: "Internal server error!!" });
   }
