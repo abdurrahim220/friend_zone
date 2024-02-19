@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthProvider";
-import axios from "axios";
 import Swal from "sweetalert2";
 import { api } from "../../utils/api";
 
@@ -10,7 +9,6 @@ const Login = () => {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm();
 
@@ -20,21 +18,22 @@ const Login = () => {
 
   const navigate = useNavigate();
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (formData) => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const response = await axios.post(
-        api+"/auth/login",
-        data
-      );
+      const res = await fetch(api + "/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: 'include',
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      setUser(data);
       Swal.fire({
         icon: "success",
         title: "Success",
         text: "Login successful!",
       });
-      // console.log(response.data);
-      // localStorage.setItem("chat-user",JSON.stringify(response))
-      setUser(response.data);
       navigate("/");
     } catch (error) {
       setLoading(false);
@@ -43,7 +42,6 @@ const Login = () => {
         title: "Error",
         text: "Login failed. Please try again.",
       });
-      // console.log(error);
     }
   };
 
