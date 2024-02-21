@@ -44,14 +44,17 @@ export const sendMessage = async (req, res) => {
 export const getMessage = async (req, res) => {
   try {
     const { id: userToChatId } = req.params;
-    const senderId = req.user_id;
-    const conversation = await Conversation.findOne({
-      participants: { $all: [senderId, userToChatId] },
-    }).populate("messages");
+		const senderId = req.user._id;
 
-    if (!conversation) return res.status(200).json([]);
-    const messages = conversation.messages;
-    res.status(200).json(messages);
+		const conversation = await Conversation.findOne({
+			participants: { $all: [senderId, userToChatId] },
+		}).populate("messages"); // NOT REFERENCE BUT ACTUAL MESSAGES
+
+		if (!conversation) return res.status(200).json([]);
+
+		const messages = conversation.messages;
+
+		res.status(200).json(messages);
   } catch (error) {
     res.status(500).json({ error: "Internal server error!!" });
   }

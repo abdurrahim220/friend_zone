@@ -28,6 +28,7 @@ const Login = () => {
         body: JSON.stringify(formData),
       });
       const data = await res.json();
+      if (data.error) throw new Error(data.error);
       setUser(data);
       Swal.fire({
         icon: "success",
@@ -40,7 +41,7 @@ const Login = () => {
       Swal.fire({
         icon: "error",
         title: "Error",
-        text: "Login failed. Please try again.",
+        text: error.message,
       });
     }
   };
