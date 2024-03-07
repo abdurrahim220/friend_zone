@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import User from "../models/user_Model.js";
 import generateTokenAndSetCookie from "../utils/generateToken.js";
 
+
 export const signUp = async (req, res) => {
   try {
     const { fullName, username, password, gender } = req.body;
@@ -30,10 +31,16 @@ export const signUp = async (req, res) => {
 
     if (newUser) {
       generateTokenAndSetCookie(newUser._id, res);
+      await newUser.save();
+      res.status(201).json({
+        _id: newUser._id,
+        fullName: newUser.fullName,
+        username: newUser.username,
+        profilePic: newUser.profilePic,
+      });
+    } else {
+      res.status(400).json({ error: "Invalid user data" });
     }
-
-    const saveUser = await newUser.save();
-    res.status(201).json(saveUser);
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }
