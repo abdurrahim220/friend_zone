@@ -2,14 +2,18 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import "./index.css";
-import {  RouterProvider } from "react-router-dom";
-import router from "./Router/Router.jsx";
-import { AuthProvider } from "./context/AuthProvider.jsx";
+import { BrowserRouter } from "react-router-dom";
+import { AuthContextProvider } from "./context/AuthContext.jsx";
+import { SocketContextProvider } from "./context/SocketContext.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <AuthProvider>
-      <RouterProvider router={router} />
-    </AuthProvider>
-  </React.StrictMode>
+	<React.StrictMode>
+		<BrowserRouter>
+			<AuthContextProvider>
+				<SocketContextProvider>
+					<App />
+				</SocketContextProvider>
+			</AuthContextProvider>
+		</BrowserRouter>
+	</React.StrictMode>
 );
